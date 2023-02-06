@@ -1,11 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
+import keycloak from "./components/utils/keycloak";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = createRoot(document.getElementById('root'));
+
+keycloak.init({
+    onLoad: "check-sso",
+    //silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
+}).then(authenticated => {
+    localStorage.setItem("react-token", keycloak.token);
+    localStorage.setItem("react-refresh-token", keycloak.refreshToken);
+    root.render(<App/>);
+})
